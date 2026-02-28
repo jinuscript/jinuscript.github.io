@@ -53,3 +53,40 @@ export default withMDX(nextConfig)
 
 withMDX(nextConfig)는 HOC 패턴으로 기존의 Next.js 설정을 감싸서 기능을 확장했다.
 
+## 3. 커스텀 MDX 컴포넌트 설정하기
+```
+ my-project
+  ├── app
+  │   └── posts
+  │       └── page.(mdx/md)
+  |── mdx-components.(tsx/js)
+  └── package.json
+```
+
+mdx-components 파일은 앱라우터와 같은 레벨에 위치해야 한다.
+
+```typescript
+import type { MDXComponents } from 'mdx/types'
+
+const components: MDXComponents = {}
+
+export function useMDXComponents(): MDXComponents {
+    return components
+}
+```
+
+앱라우터 환경에서는 보안과 성능을 위해 마크다운 요소들을 브라우저에 그대로 내보내지 않고 사용자가 정의한 컴포넌트와 매핑하는 과정을 반드시 거치도록 설계되어 있다. mdx-components 파일이 없으면 빌드 도구가 마크다운 파일을 화면에 렌더링할 구체적인 방법을 찾지 못해 에러를 발생시킨다.
+
+```typescript
+import type { MDXComponents } from 'mdx/types'
+
+const components: MDXComponents = {
+    h1: ({ children }) => <h1 style={{ color: 'red' }}>{children}</h1>,
+}
+
+export function useMDXComponents(): MDXComponents {
+    return components
+}
+```
+
+mdx-components 파일은 MDX 파일에서 사용되는 HTML 태그를 커스텀 컴포넌트로 변경할 수 있다. 예를 들어, h1 태그를 커스텀 컴포넌트로 변경하면 다음과 같이 할 수 있다. mdx 안에 사용되는 h1 태그는 전부 빨간색으로 렌더링된다.
