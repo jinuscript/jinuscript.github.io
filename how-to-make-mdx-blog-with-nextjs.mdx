@@ -101,3 +101,17 @@ mdx-components 파일은 MDX 파일에서 사용되는 HTML 태그를 커스텀 
 ```
 
 page.mdx 파일을 만들면 mdx 파일이 페이지로 렌더링이 된다.
+
+## 5. 정적 배포 세팅하기
+
+```
+const nextConfig = {
+  output: 'export', // 정적 HTML로 내보내기 설정
+  images: {
+    unoptimized: true, // GitHub Pages는 Next.js의 이미지 최적화 서버를 지원하지 않으므로 필수
+  },
+}
+```
+
+깃헙 블로그는 정적 페이지만 지원하기 때문에 output: 'export'로 설정해야 한다. 이렇게 하면 Next.js는 서버 사이드 렌더링(SSR)이나 API 라우트 같은 동적 기능을 비활성화하고, 모든 페이지를 미리 렌더링된 HTML 파일로 생성한다. 이 정적 파일들을 깃헙 리포지토리에 푸시하면 깃헙이 자동으로 정적 사이트 호스팅을 제공한다.
+
