@@ -9,5 +9,47 @@ npm install @next/mdx @mdx-js/loader @mdx-js/react @types/mdx
 - @mdx-js/react: 마크다운을 React 컴포넌트로 렌더링해준다.
 - @types/mdx: MDX 파일의 타입 정의를 해준다.
 
-##
+## 2. next.config 설정 변경하기
+
+```typescript
+import type { NextConfig } from "next";
+import createMDX from '@next/mdx'
+
+// 1. MD와 MDX 파일을 페이지로 인식하도록 설정
+const nextConfig: NextConfig = {
+  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+}
+
+// 2. MDX 관련 플러그인 향후에 추가
+const withMDX = createMDX({ })
+
+// 3. MDX config와 Next.js config 병합
+export default withMDX(nextConfig)
+```
+
+### 2-1. pageExtensions
+```typescript
+const nextConfig: NextConfig = {
+  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+}
+```
+
+pageExtensions는 Next.js가 페이지로 인식할 파일 확장자를 지정하는 설정이다. 기본값은 ['js', 'jsx', 'ts', 'tsx'] 이므로, 여기에 'md'와 'mdx'를 추가하여 MD/MDX 파일도 페이지로 인식하도록 설정했다.
+이 설정을 통해 app/posts/first-post.mdx라는 파일을 만들면 자동으로 yourdomain.com/posts/first-post라는 경로가 생성되도록 허용해준 것이다.
+
+
+### 2-2. withMDX
+```typescript
+const withMDX = createMDX({})
+```
+
+withMDX는 createMDX 함수를 호출하여 MDX 관련 플러그인을 추가한 후, Next.js의 설정을 감싸서 반환하는 역할을 한다.
+
+
+### 2-3. export default withMDX(nextConfig)
+```typescript
+export default withMDX(nextConfig)
+```
+
+withMDX(nextConfig)는 HOC 패턴으로 기존의 Next.js 설정을 감싸서 기능을 확장했다.
 
