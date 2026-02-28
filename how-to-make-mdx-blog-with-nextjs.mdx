@@ -115,3 +115,60 @@ const nextConfig = {
 
 깃헙 블로그는 정적 페이지만 지원하기 때문에 output: 'export'로 설정해야 한다. 이렇게 하면 Next.js는 서버 사이드 렌더링(SSR)이나 API 라우트 같은 동적 기능을 비활성화하고, 모든 페이지를 미리 렌더링된 HTML 파일로 생성한다. 이 정적 파일들을 깃헙 리포지토리에 푸시하면 깃헙이 자동으로 정적 사이트 호스팅을 제공한다.
 
+## 6. 깃헙 액션으로 자동 배포 설정하기
+
+```
+my-next-blog/
+├── .github/         
+│   └── workflows/    
+│       └── deploy.yml
+└── app/
+```
+
+.github 폴더를 만들고 yml 파일을 추가한다.
+
+```
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Install dependencies
+        run: npm install
+      - name: Build with Next.js
+        run: npx next build
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out # Next.js 빌드 결과물이 저장되는 폴더
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
